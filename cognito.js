@@ -64,4 +64,3 @@ const getGroup = accessToken => new Promise((resolve, reject) => {
   });
 
   module.exports = { getAuthCode, fetchToken, verifyToken, getGroup }
-

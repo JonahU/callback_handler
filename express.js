@@ -1,5 +1,6 @@
 const express = require('express');
 const fs = require('fs');
+const https = require('https');
 const Cognito = require('./cognito');
 
 const app = express();
@@ -38,6 +39,11 @@ app.get('/dog', (req, res) => {
     res.end(dogPhoto);
 });
 
-const listen = app.listen(port, () => console.log(`App listening on port ${port}!`));
+const listen = (sslOptions) => {
+    if (sslOptions) {
+        https.createServer(sslOptions, app);
+    }
+    app.listen(port, () => console.log(`App listening on port ${port}!`));
+}
 
 module.exports = { listen };
