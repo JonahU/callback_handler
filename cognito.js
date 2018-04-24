@@ -1,6 +1,8 @@
 const Promise = require('bluebird');
-const jsonwebtoken = require('jsonwebtoken');
+const rp = require('request-promise');
+const jwkToPem = require('jwk-to-pem');
 const { first } = require('lodash');
+const verify = Promise.promisify(require('jsonwebtoken').verify);
 
 const config = {
     id: process.env.CLIENT_ID,
@@ -45,12 +47,21 @@ const fetchToken = code => new Promise((resolve, reject) => {
     .catch(error => reject(new Error('Error fetching token ', error)));
 });
 
+const verifyToken = token => new Promise((resolve, reject) => {
+    rp(jwksPath)
+        .then((jwksString) => {
+            const jwks = JSON.parse(jwksString);
+            const accessPem = jwkToPem(jwks.keys[1]);
+            return verify(token.token.access_token, accessPem);
+        })
+        .then(accessToken => resolve(accessToken))
+        .catch(err => reject(new Error('Token verification failed')));
+});
+
 const getGroup = accessToken => new Promise((resolve, reject) => {
-    const token = jsonwebtoken.decode(accessToken.token.access_token);
-    if (!token) reject(new Error('Incorrect token configuration'));
-    const group = first(token['cognito:groups']);
+    const group = first(accessToken['cognito:groups']);
     resolve(group);
   });
 
-  module.exports = { getAuthCode, fetchToken, getGroup }
+  module.exports = { getAuthCode, fetchToken, verifyToken, getGroup }
 

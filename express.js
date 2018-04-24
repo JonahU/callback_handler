@@ -11,6 +11,7 @@ const catPhoto = fs.readFileSync('./images/cat.jpg');
 app.get('/', (req, res) => {
     Cognito.getAuthCode(req.query)
     .then(code => Cognito.fetchToken(code))
+    .then(token => Cognito.verifyToken(token))
     .then(token => Cognito.getGroup(token))
     .then((group) => {
         switch(group) {
