@@ -41,9 +41,11 @@ app.get('/dog', (req, res) => {
 
 const listen = (sslOptions) => {
     if (sslOptions) {
-        https.createServer(sslOptions, app);
+        https.createServer(sslOptions, app)
+        .listen(port, () => console.log(`App listening on port ${port}!`));
+    } else {
+        app.listen(port, () => console.log(`App listening on port ${port}!`));
     }
-    app.listen(port, () => console.log(`App listening on port ${port}!`));
 }
 
 module.exports = { listen };

@@ -6,8 +6,8 @@ console.log(`Cognito hosted auth: https://${process.env.COGNITO_DOMAIN_PREFIX}.a
 
 if(process.env.SSL_KEY && process.env.SSL_CERTIFICATE) {
     const sslOptions = {
-        key: fs.readFileSync(process.env.SSL_KEY),
-        cert: fs.readFileSync(process.env.SSL_CERTIFICATE)
+        key: fs.readFileSync(process.env.SSL_KEY, 'utf8'),
+        cert: fs.readFileSync(process.env.SSL_CERTIFICATE, 'utf8')
     };
     app.listen(sslOptions);
 } else {
