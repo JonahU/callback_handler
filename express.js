@@ -17,10 +17,10 @@ app.get('/', (req, res) => {
     .then((group) => {
         switch(group) {
             case 'Cat':
-                res.redirect('/cat');
+                res.redirect(302, '/cat');
                 break;
             case 'Dog':
-                res.redirect('/dog');
+                res.redirect(302, '/dog');
                 break;
             default:
                 throw new Error('Unknown group');
