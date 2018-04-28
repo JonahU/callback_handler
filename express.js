@@ -9,7 +9,12 @@ const port = process.env.PORT;
 const dogPhoto = fs.readFileSync('./images/dog.jpg');
 const catPhoto = fs.readFileSync('./images/cat.jpg');
 
+// For load balancer
 app.get('/', (req, res) => {
+    res.status(200).send('OK');
+})
+
+app.get('/callback', (req, res) => {
     Cognito.getAuthCode(req.query)
     .then(code => Cognito.fetchToken(code))
     .then(token => Cognito.verifyToken(token))
