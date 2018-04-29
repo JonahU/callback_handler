@@ -61,6 +61,10 @@ const verifyToken = token => new Promise((resolve, reject) => {
 const getGroup = accessToken => new Promise((resolve, reject) => {
     const group = first(accessToken['cognito:groups']);
     resolve(group);
-  });
+});
 
-  module.exports = { getAuthCode, fetchToken, verifyToken, getGroup }
+const getUrl = () => {
+    return `https://${config.prefix}.auth.${config.region}.amazoncognito.com/login?response_type=code&client_id=${config.id}&redirect_uri=${config.redirectUri}`;
+}
+
+module.exports = { getAuthCode, fetchToken, verifyToken, getGroup, getUrl }

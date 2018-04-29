@@ -1,0 +1,74 @@
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Login</title>
+
+<!-- STYLE -->
+<style>
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: "Helvetica";
+    color: #777;
+}
+
+a {
+    text-decoration: none;
+    color: white;
+}
+
+a:hover {
+    color: #B7B7B7;
+}
+
+a:active {
+    color: #757575;
+}
+
+.bg { 
+    background-image: url("banner.jpg");
+
+    height: 100%; 
+    position: relative;
+    opacity: 0.7;
+
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.caption {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    text-align: center;
+    color: #000;
+}
+
+.caption span.border {
+    background-color: #1C1C1C;
+    border: 2px solid #000;
+    border-radius: 1px;
+    opacity: 0.95;
+    color: #fff;
+    padding: 15px;
+    font-size: 45px;
+    letter-spacing: 5px;
+}
+</style>
+</head>
+
+<!-- HTML -->
+<body>
+<div class="bg">
+    <div class="caption">
+        <span class="border">
+            <a href={{url}}>Sign in</a>
+        </span>
+    </div>
+</div>
+
+</body>
+</html>

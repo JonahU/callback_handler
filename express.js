@@ -1,17 +1,29 @@
 const express = require('express');
+const exphbs = require('express-handlebars');
 const fs = require('fs');
+const path = require('path');
 const https = require('https');
 const Cognito = require('./cognito');
 
 const app = express();
+const hbs = exphbs.create();
+app.engine('handlebars', hbs.engine);
+app.set('view engine', 'handlebars');
+
+app.use(express.static('./images'));
+
 const port = process.env.PORT;
 
-const dogPhoto = fs.readFileSync('./images/dog.jpg');
-const catPhoto = fs.readFileSync('./images/cat.jpg');
+const imageA = fs.readFileSync('./images/image-A.jpg');
+const imageB = fs.readFileSync('./images/image-B.jpg');
 
-// For load balancer
+
 app.get('/', (req, res) => {
-    res.status(200).send('OK');
+    res.render('home', {
+        helpers: {
+            url: () => { return Cognito.getUrl(); }
+        }
+    });
 })
 
 app.get('/callback', (req, res) => {
@@ -21,11 +33,11 @@ app.get('/callback', (req, res) => {
     .then(token => Cognito.getGroup(token))
     .then((group) => {
         switch(group) {
-            case 'Cat':
-                res.redirect(302, '/cat');
+            case 'A':
+                res.redirect(302, '/GROUP_A');
                 break;
-            case 'Dog':
-                res.redirect(302, '/dog');
+            case 'B':
+                res.redirect(302, '/GROUP_B');
                 break;
             default:
                 throw new Error('Unknown group');
@@ -34,14 +46,14 @@ app.get('/callback', (req, res) => {
     .catch(err => res.send(err.message))
 });
 
-app.get('/cat', (req, res) => {
+app.get('/GROUP_A', (req, res) => {
     res.contentType('image/jpeg');
-    res.end(catPhoto);
+    res.end(imageA);
 });
 
-app.get('/dog', (req, res) => {
+app.get('/GROUP_B', (req, res) => {
     res.contentType('image/jpeg');
-    res.end(dogPhoto);
+    res.end(imageB);
 });
 
 const listen = (sslOptions) => {
