@@ -19,7 +19,7 @@ const imageB = fs.readFileSync('./images/image-B.jpg');
 
 
 app.get('/', (req, res) => {
-    res.render('home', {
+    res.status(200).render('home', {
         helpers: {
             url: () => { return Cognito.getUrl(); }
         }
