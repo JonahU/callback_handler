@@ -3,6 +3,7 @@ const exphbs = require('express-handlebars');
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
+const url = require('url');
 const Cognito = require('./cognito');
 
 const app = express();
@@ -10,13 +11,9 @@ const hbs = exphbs.create();
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 
-app.use(express.static('./images'));
-
 const port = process.env.PORT;
 
-const imageA = fs.readFileSync('./images/image-A.jpg');
-const imageB = fs.readFileSync('./images/image-B.jpg');
-
+app.use(express.static('./images'));
 
 app.get('/', (req, res) => {
     res.status(200).render('home', {
@@ -31,14 +28,20 @@ app.get('/callback', (req, res) => {
     .then(code => Cognito.fetchToken(code))
     .then(token => Cognito.verifyToken(token))
     .then(token => Cognito.getGroup(token))
-    .then((group) => {
+    .then(([group, accessToken]) => {
         switch(group) {
             case 'A':
-                res.redirect(302, '/GROUP_A');
+                res.redirect(302, url.format({
+                    pathname: '/GROUP_A',
+                    query: accessToken
+                }));
                 break;
             case 'B':
-                res.redirect(302, '/GROUP_B');
-                break;
+                res.redirect(302, url.format({
+                    pathname: '/GROUP_B',
+                    query: accessToken
+                }));
+                break; 
             default:
                 throw new Error('Unknown group');
         }        
@@ -47,13 +50,23 @@ app.get('/callback', (req, res) => {
 });
 
 app.get('/GROUP_A', (req, res) => {
-    res.contentType('image/jpeg');
-    res.end(imageA);
+    res.render('page', {
+        helpers: {
+            access_token: () => { return JSON.stringify(req.query); },
+            image: () => { return '/image-A.jpg'; },
+            group: () => { return 'A'; }
+        }
+    });
 });
 
 app.get('/GROUP_B', (req, res) => {
-    res.contentType('image/jpeg');
-    res.end(imageB);
+    res.render('page', {
+        helpers: {
+            access_token: () => { return JSON.stringify(req.query); },
+            image: () => { return '/image-B.jpg'; },
+            group: () => { return 'B'; }
+        }
+    });
 });
 
 const listen = (sslOptions) => {

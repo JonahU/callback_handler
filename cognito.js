@@ -60,7 +60,7 @@ const verifyToken = token => new Promise((resolve, reject) => {
 
 const getGroup = accessToken => new Promise((resolve, reject) => {
     const group = first(accessToken['cognito:groups']);
-    resolve(group);
+    resolve([group, accessToken]);
 });
 
 const getUrl = () => {
