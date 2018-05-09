@@ -13,7 +13,7 @@ app.set('view engine', 'handlebars');
 
 const port = process.env.PORT;
 
-app.use(express.static('./images'));
+app.use(express.static('./public'));
 
 app.get('/', (req, res) => {
     res.status(200).render('home', {
@@ -53,7 +53,7 @@ app.get('/GROUP_A', (req, res) => {
     res.render('page', {
         helpers: {
             access_token: () => { return JSON.stringify(req.query); },
-            image: () => { return '/image-A.jpg'; },
+            image: () => { return 'images/image-A.jpg'; },
             group: () => { return 'A'; }
         }
     });
@@ -63,7 +63,7 @@ app.get('/GROUP_B', (req, res) => {
     res.render('page', {
         helpers: {
             access_token: () => { return JSON.stringify(req.query); },
-            image: () => { return '/image-B.jpg'; },
+            image: () => { return 'images/image-B.jpg'; },
             group: () => { return 'B'; }
         }
     });
