@@ -5,19 +5,6 @@ body, html {
     color: #777;
 }
 
-a {
-    text-decoration: none;
-    color: white;
-}
-
-a:hover {
-    color: #B7B7B7;
-}
-
-a:active {
-    color: #757575;
-}
-
 .bg { 
     background-image: url("/images/banner.jpg");
 
@@ -31,22 +18,14 @@ a:active {
     background-size: cover;
 }
 
-.caption {
+.btn {
     position: absolute;
     left: 0;
-    top: 50%;
+    top: 46%;
     width: 100%;
+    padding: 20px 0;
+    font-size: 25px;
+    letter-spacing: 7px;
     text-align: center;
-    color: #000;
-}
-
-.caption span.border {
-    background-color: #1C1C1C;
-    border: 2px solid #000;
-    border-radius: 1px;
-    opacity: 0.95;
-    color: #fff;
-    padding: 15px;
-    font-size: 45px;
-    letter-spacing: 5px;
+    border-radius: 0;
 }
