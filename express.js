@@ -12,6 +12,8 @@ app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 
 const port = process.env.PORT;
+const groupA = process.env.GROUP_A;
+const groupB = process.env.GROUP_B;
 
 app.use(express.static('./public'));
 
@@ -30,15 +32,15 @@ app.get('/callback', (req, res) => {
     .then(token => Cognito.getGroup(token))
     .then(([group, accessToken]) => {
         switch(group) {
-            case 'A':
+            case groupA:
                 res.redirect(302, url.format({
-                    pathname: '/GROUP_A',
+                    pathname: `/${groupA.toLowerCase()}`,
                     query: accessToken
                 }));
                 break;
-            case 'B':
+            case groupB:
                 res.redirect(302, url.format({
-                    pathname: '/GROUP_B',
+                    pathname: `/${groupB.toLowerCase()}`,
                     query: accessToken
                 }));
                 break; 
@@ -49,22 +51,22 @@ app.get('/callback', (req, res) => {
     .catch(err => res.send(err.message))
 });
 
-app.get('/GROUP_A', (req, res) => {
+app.get(`/${groupA.toLowerCase()}`, (req, res) => {
     res.render('page', {
         helpers: {
             access_token: () => { return JSON.stringify(req.query); },
-            image: () => { return 'images/image-A.jpg'; },
-            group: () => { return 'A'; }
+            image: () => { return `images/${groupA}.jpg`; },
+            group: () => { return groupA; }
         }
     });
 });
 
-app.get('/GROUP_B', (req, res) => {
+app.get(`/${groupB.toLowerCase()}`, (req, res) => {
     res.render('page', {
         helpers: {
             access_token: () => { return JSON.stringify(req.query); },
-            image: () => { return 'images/image-B.jpg'; },
-            group: () => { return 'B'; }
+            image: () => { return `images/${groupB}.jpg`; },
+            group: () => { return groupB; }
         }
     });
 });
