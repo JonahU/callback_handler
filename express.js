@@ -1,19 +1,16 @@
 const express = require('express');
 const exphbs = require('express-handlebars');
 const fs = require('fs');
-const path = require('path');
 const https = require('https');
+const path = require('path');
 const url = require('url');
 const Cognito = require('./cognito');
+const config = require('./config');
 
 const app = express();
 const hbs = exphbs.create();
 app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
-
-const port = process.env.PORT;
-const groupA = process.env.GROUP_A;
-const groupB = process.env.GROUP_B;
 
 app.use(express.static('./public'));
 
@@ -32,15 +29,15 @@ app.get('/callback', (req, res) => {
     .then(token => Cognito.getGroup(token))
     .then(([group, accessToken]) => {
         switch(group) {
-            case groupA:
+            case config.groupA():
                 res.redirect(302, url.format({
-                    pathname: `/${groupA.toLowerCase()}`,
+                    pathname: `/${config.pathA()}`,
                     query: accessToken
                 }));
                 break;
-            case groupB:
+            case config.groupB():
                 res.redirect(302, url.format({
-                    pathname: `/${groupB.toLowerCase()}`,
+                    pathname: `/${config.pathB()}`,
                     query: accessToken
                 }));
                 break; 
@@ -51,22 +48,22 @@ app.get('/callback', (req, res) => {
     .catch(err => res.send(err.message))
 });
 
-app.get(`/${groupA.toLowerCase()}`, (req, res) => {
+app.get(`/${config.pathA()}`, (req, res) => {
     res.render('page', {
         helpers: {
             access_token: () => { return JSON.stringify(req.query); },
-            image: () => { return `images/${groupA}.jpg`; },
-            group: () => { return groupA; }
+            image: () => { return `images/${config.groupA()}.jpg`; },
+            group: () => { return config.groupA(); }
         }
     });
 });
 
-app.get(`/${groupB.toLowerCase()}`, (req, res) => {
+app.get(`/${config.pathB()}`, (req, res) => {
     res.render('page', {
         helpers: {
             access_token: () => { return JSON.stringify(req.query); },
-            image: () => { return `images/${groupB}.jpg`; },
-            group: () => { return groupB; }
+            image: () => { return `images/${config.groupB()}.jpg`; },
+            group: () => { return config.groupB(); }
         }
     });
 });
@@ -74,9 +71,9 @@ app.get(`/${groupB.toLowerCase()}`, (req, res) => {
 const listen = (sslOptions) => {
     if (sslOptions) {
         https.createServer(sslOptions, app)
-        .listen(port, () => console.log(`App listening on port ${port}!`));
+        .listen(config.port(), () => console.log(`App listening on port ${config.port()}!`));
     } else {
-        app.listen(port, () => console.log(`App listening on port ${port}!`));
+        app.listen(config.port(), () => console.log(`App listening on port ${config.port()}!`));
     }
 }
 

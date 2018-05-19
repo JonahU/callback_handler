@@ -1,29 +1,21 @@
 const Promise = require('bluebird');
+const config = require('./config');
 const rp = require('request-promise');
 const jwkToPem = require('jwk-to-pem');
 const { first } = require('lodash');
 const verify = Promise.promisify(require('jsonwebtoken').verify);
 
-const config = {
-    id: process.env.CLIENT_ID,
-    secret: process.env.CLIENT_SECRET,
-    redirectUri: process.env.REDIRECT_URI,
-    userPoolId: process.env.POOL_ID,
-    region: process.env.AWS_REGION,
-    prefix: process.env.COGNITO_DOMAIN_PREFIX
-};
-
-const jwksPath = `https://cognito-idp.${config.region}.amazonaws.com/${config.userPoolId}/.well-known/jwks.json`;
+const jwksPath = `https://cognito-idp.${config.awsRegion()}.amazonaws.com/${config.poolId()}/.well-known/jwks.json`;
 
 const oauth2 = require('simple-oauth2').create({
     client: {
-        id: config.id,
-        secret: config.secret
+        id: config.clientId(),
+        secret: config.clientSecret()
     },
     auth: {
-        tokenHost: `https://${config.prefix}.auth.${config.region}.amazoncognito.com`,
+        tokenHost: `https://${config.cognitoDomainPrefix()}.auth.${config.awsRegion()}.amazoncognito.com`,
         tokenPath: '/oauth2/token',
-        authorizePath: `login?redirect_uri=${config.redirectUri}&response_type=code&client_id=${config.id}`
+        authorizePath: `login?redirect_uri=${config.redirectUri()}&response_type=code&client_id=${config.clientId()}`
     }
 });
 
@@ -36,7 +28,7 @@ const getAuthCode = query => new Promise((resolve, reject) => {
 const fetchToken = code => new Promise((resolve, reject) => {
     const tokenConfig = {
         code,
-        redirect_uri: config.redirectUri
+        redirect_uri: config.redirectUri()
     };
 
     oauth2.authorizationCode.getToken(tokenConfig)
@@ -63,8 +55,4 @@ const getGroup = accessToken => new Promise((resolve, reject) => {
     resolve([group, accessToken]);
 });
 
-const getUrl = () => {
-    return `https://${config.prefix}.auth.${config.region}.amazoncognito.com/login?response_type=code&client_id=${config.id}&redirect_uri=${config.redirectUri}`;
-}
-
-module.exports = { getAuthCode, fetchToken, verifyToken, getGroup, getUrl }
+module.exports = { getAuthCode, fetchToken, verifyToken, getGroup }

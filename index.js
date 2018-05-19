@@ -1,14 +1,13 @@
-require('dotenv').config();
 const app = require('./express');
-const Cognito = require('./cognito');
+const config = require('./config');
 const fs = require('fs');
 
-console.log(`Cognito hosted auth: ${Cognito.getUrl()}`);
+console.log(`Cognito hosted auth: ${config.hostedAuthPage()}`);
 
-if(process.env.SSL_KEY && process.env.SSL_CERTIFICATE) {
+if(config.sslKey() && config.sslCertificate()) {
     const sslOptions = {
-        key: fs.readFileSync(process.env.SSL_KEY, 'utf8'),
-        cert: fs.readFileSync(process.env.SSL_CERTIFICATE, 'utf8')
+        key: fs.readFileSync(config.sslKey(), 'utf8'),
+        cert: fs.readFileSync(config.sslCertificate(), 'utf8')
     };
     app.listen(sslOptions);
 } else {
