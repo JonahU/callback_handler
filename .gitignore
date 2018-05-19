@@ -1,6 +1,7 @@
 .env
 .DS_Store
 .vscode
+git_stats
 node_modules
 ssl
 ec2.env
