@@ -43,16 +43,24 @@ const verifyToken = token => new Promise((resolve, reject) => {
     rp(jwksPath)
         .then((jwksString) => {
             const jwks = JSON.parse(jwksString);
-            const accessPem = jwkToPem(jwks.keys[1]);
-            return verify(token.token.access_token, accessPem);
+            const idPem = jwkToPem(jwks.keys[0]);
+            return verify(token.token.id_token, idPem);
         })
-        .then(accessToken => resolve(accessToken))
+        .then(decodedToken => {
+            const tokenObj = {
+                decodedToken,
+                token: token.token
+            }
+            resolve(tokenObj)
+        })
         .catch(err => reject(new Error('Token verification failed')));
 });
 
-const getGroup = accessToken => new Promise((resolve, reject) => {
+const getGroup = token => new Promise((resolve, reject) => {
+    const accessToken = token.decodedToken;
     const group = first(accessToken['cognito:groups']);
-    resolve([group, accessToken]);
+    const overrideRedirect = accessToken.override_redirect_uri;
+    resolve([group, token, overrideRedirect]);
 });
 
 module.exports = { getAuthCode, fetchToken, verifyToken, getGroup }

@@ -27,18 +27,26 @@ app.get('/callback', (req, res) => {
     .then(code => Cognito.fetchToken(code))
     .then(token => Cognito.verifyToken(token))
     .then(token => Cognito.getGroup(token))
-    .then(([group, accessToken]) => {
+    .then(([group, accessToken, overrideRedirect]) => {
         switch(group) {
             case config.groupA():
-                res.redirect(302, url.format({
-                    pathname: `/${config.pathA()}`,
-                    query: accessToken
-                }));
+                if (overrideRedirect) {
+                    res.set({
+                        jwt: accessToken.token.id_token,
+                        refresh: accessToken.token.refresh_token
+                    });
+                    res.redirect(302, overrideRedirect);
+                } else {
+                    res.redirect(302, url.format({
+                        pathname: `/${config.pathA()}`,
+                        query: accessToken.decodedToken
+                    }));
+                }
                 break;
             case config.groupB():
                 res.redirect(302, url.format({
                     pathname: `/${config.pathB()}`,
-                    query: accessToken
+                    query: accessToken.decodedToken
                 }));
                 break; 
             default:
