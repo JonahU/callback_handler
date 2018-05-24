@@ -30,24 +30,10 @@ app.get('/callback', (req, res) => {
     .then(([group, accessToken, overrideRedirect]) => {
         switch(group) {
             case config.groupA():
-                if (overrideRedirect) {
-                    res.set({
-                        jwt: accessToken.token.id_token,
-                        refresh: accessToken.token.refresh_token
-                    });
-                    res.redirect(302, overrideRedirect);
-                } else {
-                    res.redirect(302, url.format({
-                        pathname: `/${config.pathA()}`,
-                        query: accessToken.decodedToken
-                    }));
-                }
+                handleRedirect(res, accessToken, overrideRedirect);
                 break;
             case config.groupB():
-                res.redirect(302, url.format({
-                    pathname: `/${config.pathB()}`,
-                    query: accessToken.decodedToken
-                }));
+                handleRedirect(res, accessToken, overrideRedirect);
                 break; 
             default:
                 throw new Error('Unknown group');
@@ -75,6 +61,21 @@ app.get(`/${config.pathB()}`, (req, res) => {
         }
     });
 });
+
+const handleRedirect = (res, accessToken, overrideRedirect) => {
+    if (overrideRedirect) {
+        res.set({
+            jwt: accessToken.token.id_token,
+            refresh: accessToken.token.refresh_token
+        });
+        res.redirect(302, overrideRedirect);
+    } else {
+        res.redirect(302, url.format({
+            pathname: `/${config.pathA()}`,
+            query: accessToken.decodedToken
+        }));
+    }
+}
 
 const listen = (sslOptions) => {
     if (sslOptions) {
