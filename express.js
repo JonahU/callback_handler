@@ -17,7 +17,7 @@ app.use(express.static('./public'));
 app.get('/', (req, res) => {
     res.status(200).render('home', {
         helpers: {
-            url: () => { return Cognito.getUrl(); }
+            url: () => { return config.hostedAuthPage(); }
         }
     });
 })
