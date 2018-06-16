@@ -60,9 +60,10 @@ app.get(`/${config.pathB()}`, (req, res) => {
     });
 });
 
-const externalRedirect = (res, accessToken, url) => {
+const externalRedirect = (res, accessToken, url, tokenName) => {
+    const jwt = tokenName || 'jwt';
     res.set({
-        jwt: accessToken.token.id_token,
+        [jwt]: accessToken.token.id_token,
         refresh: accessToken.token.refresh_token
     });
     res.redirect(302, url);
@@ -81,7 +82,7 @@ const handleRedirect = (res, accessToken, group, overrideRedirect) => {
             externalRedirect(res, accessToken, overrideRedirect)
             break;
         case config.redirectB():
-            externalRedirect(res, accessToken, overrideRedirect)
+            externalRedirect(res, accessToken, overrideRedirect, config.tokenNameOverrideB())
             break;
         default:
             internalRedirect(res, accessToken, group)

@@ -18,5 +18,7 @@ module.exports = {
   port: () => env.PORT,
   redirectUri: () => env.REDIRECT_URI,
   sslKey: () => env.SSL_KEY,
-  sslCertificate: () => env.SSL_CERTIFICATE
+  sslCertificate: () => env.SSL_CERTIFICATE,
+  tokenNameOverrideA: () => env.TOKEN_NAME_OVERRIDE_A,
+  tokenNameOverrideB: () => env.TOKEN_NAME_OVERRIDE_B
 }
