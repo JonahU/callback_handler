@@ -27,10 +27,10 @@ app.get('/callback', (req, res) => {
         .then(token => Cognito.getGroup(token))
         .then(([group, accessToken, overrideRedirect]) => {
             switch(group) {
-                case config.groupA():
+                case config.group('A'):
                     handleRedirect(res, accessToken, group, overrideRedirect);
                     break;
-                case config.groupB():
+                case config.group('B'):
                     handleRedirect(res, accessToken, group, overrideRedirect);
                     break; 
                 default:
@@ -40,22 +40,22 @@ app.get('/callback', (req, res) => {
         .catch(err => res.send(err.message))
 });
 
-app.get(`/${config.pathA()}`, (req, res) => {
+app.get(`/${config.path('A')}`, (req, res) => {
     res.render('page', {
         helpers: {
             access_token: () => { return JSON.stringify(req.query); },
-            image: () => { return `images/${config.groupA()}.jpg`; },
-            group: () => { return config.groupA(); }
+            image: () => { return `images/${config.group('A')}.jpg`; },
+            group: () => { return config.group('A'); }
         }
     });
 });
 
-app.get(`/${config.pathB()}`, (req, res) => {
+app.get(`/${config.path('B')}`, (req, res) => {
     res.render('page', {
         helpers: {
             access_token: () => { return JSON.stringify(req.query); },
-            image: () => { return `images/${config.groupB()}.jpg`; },
-            group: () => { return config.groupB(); }
+            image: () => { return `images/${config.group('B')}.jpg`; },
+            group: () => { return config.group('B'); }
         }
     });
 });
@@ -78,11 +78,11 @@ const internalRedirect = (res, accessToken, group) => {
 
 const handleRedirect = (res, accessToken, group, overrideRedirect) => {
     switch (overrideRedirect) {
-        case config.redirectA():
+        case config.redirect('A'):
             externalRedirect(res, accessToken, overrideRedirect)
             break;
-        case config.redirectB():
-            externalRedirect(res, accessToken, overrideRedirect, config.tokenNameOverrideB())
+        case config.redirect('B'):
+            externalRedirect(res, accessToken, overrideRedirect, config.tokenNameOverride('B'))
             break;
         default:
             internalRedirect(res, accessToken, group)
