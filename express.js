@@ -60,13 +60,15 @@ app.get(`/${config.path('B')}`, (req, res) => {
     });
 });
 
-const externalRedirect = (res, accessToken, url, tokenName) => {
+const externalRedirect = (res, accessToken, destination, tokenName) => {
     const jwt = tokenName || 'jwt';
-    res.set({
-        [jwt]: accessToken.token.id_token,
-        refresh: accessToken.token.refresh_token
-    });
-    res.redirect(302, url);
+    res.redirect(302, url.format({
+        pathname: destination,
+        query: {
+            [jwt]: accessToken.token.id_token,
+            refresh: accessToken.token.refresh_token
+        }
+    }));
 }
 
 const internalRedirect = (res, accessToken, group) => {
