@@ -1,10 +1,9 @@
-.env
+*.env
 .DS_Store
 .vscode
 git_stats
 node_modules
 ssl
-ec2.env
 public/images
 public/favicon.ico
 public/favicon.png
